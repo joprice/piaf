@@ -443,6 +443,7 @@ module Ws : sig
     val send_stream : t -> Bigstringaf.t IOVec.t Stream.t -> unit
     val send_string_stream : t -> string Stream.t -> unit
     val send_string : t -> string -> unit
+    val send_string_text : t -> string -> unit
     val send_bigstring : t -> ?off:int -> ?len:int -> Bigstringaf.t -> unit
     val send_ping : t -> unit
     val send_pong : t -> unit

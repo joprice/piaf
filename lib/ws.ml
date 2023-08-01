@@ -48,6 +48,7 @@ module Descriptor : sig
   val send_stream : t -> Bigstringaf.t IOVec.t Stream.t -> unit
   val send_string_stream : t -> string Stream.t -> unit
   val send_string : t -> string -> unit
+  val send_string_text : t -> string -> unit
   val send_bigstring : t -> ?off:int -> ?len:int -> Bigstringaf.t -> unit
   val send_ping : t -> unit
   val send_pong : t -> unit
@@ -65,9 +66,9 @@ end = struct
   let create ~frames wsd = { wsd; frames }
   let frames t = t.frames
 
-  let send_bytes t ?(off = 0) ?len bytes =
+  let send_bytes t ~kind ?(off = 0) ?len bytes =
     let len = match len with Some l -> l | None -> Bytes.length bytes in
-    Wsd.send_bytes t.wsd ~kind:`Binary ~off ~len bytes
+    Wsd.send_bytes t.wsd ~kind ~off ~len bytes
 
   let send_iovec : t -> Bigstringaf.t IOVec.t -> unit =
    fun t iovec ->
@@ -82,7 +83,8 @@ end = struct
       send_stream t stream
     | None -> ()
 
-  let send_string t str = send_bytes t (Bytes.of_string str)
+  let send_string  t str = send_bytes t ~kind:`Binary (Bytes.of_string str)
+  let send_string_text t str = send_bytes t ~kind:`Text (Bytes.of_string str)
 
   let rec send_string_stream : t -> string Stream.t -> unit =
    fun t stream ->
